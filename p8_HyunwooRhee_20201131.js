@@ -4,72 +4,22 @@
  * Ericano Rhee on github.com/ienground
  */
 
-class Cannon {
-    constructor(x, y, size, angle) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.angle = angle;
-    }
-
-    draw() {
-        stroke(0);
-        strokeWeight(0.05 * this.size);
-        fill('#93570f');
-        beginShape();
-        vertex(this.x - this.size / 2, this.y);
-        vertex(this.x - this.size / 2, this.y + this.size / 4);
-        vertex(this.x + this.size / 2, this.y + this.size / 8);
-        vertex(this.x + this.size / 2, this.y - this.size * 3 / 8);
-        vertex(this.x + this.size / 4, this.y - this.size * 3 / 8);
-        vertex(this.x, this.y - this.size / 8);
-        vertex(this.x - this.size / 2, this.y);
-        endShape();
-
-        fill('#444649')
-        circle(this.x + this.size / 2, this.y + this.size / 8, this.size / 2);
-
-        fill('#676a6d')
-        push();
-        translate(this.x + this.size / 4, this.y - this.size * 3 / 8);
-        rotate(this.angle);
-        circle(-this.size / 4, 0, this.size / 8);
-        arc(0, 0, this.size / 2, this.size / 2, 90, 270, PIE);
-        rect(0, -this.size / 4, this.size, this.size / 2);
-        rect(-this.size / 10, -this.size / 3.5, this.size / 5, this.size / 1.75);
-        rect(this.size - this.size / 10, -this.size / 3.5, this.size / 5, this.size / 1.75);
-        pop();
-    }
-
-    setAngle(angle) {
-        this.angle = angle;
-    }
-
-    getEndX() {
-        return this.x + this.size / 4 + this.size * cos(this.angle);
-    }
-
-    getEndY() {
-        return this.y - this.size * 3 / 8 + this.size * sin(this.angle);
-    }
-}
-
-let points = [], oldPoints = [];
-let currentPointsX = [], currentPointsY = [];
 let font;
 let inputBox, inputButton;
+
 let content = "android";
 let oldContent = "android";
-let sampleFactor = 12;
 
-let cannon;
+let contentState = [];
 
-let moving_flag = 0;
-let progress = 0;
-let maxProgress = 5 * 60;
+let size = 200;
+
+let navy, orange, blue, sky;
+
+let p, p2;
 
 function preload() {
-    font = loadFont("assets/ProductSans-Regular.ttf");
+    font = loadFont("assets/PeaceSans.otf");
 }
 
 function setup() {
@@ -82,103 +32,186 @@ function setup() {
     inputButton.position(inputBox.x + inputBox.width, inputBox.y);
     inputButton.mousePressed(textButtonOnClickListener)
 
-    let size = 50;
-    cannon = new Cannon(size, height - size / 2, size, 0);
 
-    textFont(font)
-    textSize(100);
+    textButtonOnClickListener();
 
-    let tWidth = textWidth(content);
-    let oldTWidth = textWidth(oldContent);
 
-    points = font.textToPoints(content, width / 2 - tWidth / 2, height / 2, 100, {
-        sampleFactor: sampleFactor / 100,
-        simplifyThreshold: 0
-    });
-
-    oldPoints = points;
 }
 
 function draw() {
-    background(255);
+    if (frameCount > 230) return;
 
-    // cannon.setAngle(frameCount % 360);
-    cannon.draw();
-
-    noStroke();
-    fill(255, 0, 0);
-    // circle(cannon.getEndX(), cannon.getEndY(), 20);
+    background(0);
 
     noStroke();
-    fill(0);
-    for (let i = 0; i < points.length; i++) {
-        // circle(points[i].x, points[i].y, 5);
-    }
+    fill(255);//, 255, 0);
 
-    fill(255, 0, 0);
-    // for (let i = -150; i < 150; i++) {
-    //     circle(width / 2 + i, height / 2 + -25 + 50 * sin(i + frameCount), 5);
-    // }
-
-    fill(0, 255, 0);
-
-    let length = points.length;
-    if (length > oldPoints.length) {
-        length = oldPoints.length;
-    }
-
-    if (progress <= maxProgress) {
-        for (let i = 0; i < length; i++) {
-            currentPointsX[i] = map(progress, 0, maxProgress, oldPoints[i].x, points[i].x);
-            currentPointsY[i] = map(progress, 0, maxProgress, oldPoints[i].y, points[i].y);
-        }
-    }
-
-    for (let i = 0; i < currentPointsX.length; i++) {
-        circle(currentPointsX[i], currentPointsY[i], 5);
-        // circle(currentPointsX[i], currentPointsY[i] + -5 + 10 * sin(currentPointsX[i] + frameCount), 5);
-    }
-
-    // fill(255, 0, 0);
-    // for (let i = 0; i < oldPoints.length; i++) {
-    //     circle(oldPoints[i].x, oldPoints[i].y, 5);
-    // }
-    //
-    // fill(0, 0, 255);
-    // for (let i = 0; i < points.length; i++) {
-    //     circle(points[i].x, points[i].y, 5);
-    // }
-
-    progress++;
-
-
-}
-
-function textButtonOnClickListener() {
-    content = inputBox.value();
-
-    oldPoints = points;
+    let size = 200;
+    textSize(size);
+    textFont(font);
+    textAlign(CENTER);
 
     let tWidth = textWidth(content);
 
-    points = font.textToPoints(content, width / 2 - tWidth / 2, height / 2, 100, {
-        sampleFactor: sampleFactor / 100,
-        simplifyThreshold: 0
-    });
+    for (let i = 0; i < content.length; i++) {
+        let letterWidth = 0;
+        for (let j = 0; j < i; j++) {
+            letterWidth += textWidth(content[j]);
+        }
 
-    // let length = points.length;
-    // if (length > oldPoints.length) {
-    //     length = oldPoints.length;
+        if (contentState[i] >= 0) {
+            contentState[i]++;
+
+            let textBox = font.textBounds(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2)
+
+            if (contentState[i] < 60) { // 땅 고르기
+                drawLevelGroundAndCrain(i, tWidth, letterWidth);
+            } else if (contentState[i] < 120) { // 철심 세우기
+                if (i + 1 < content.length) {
+                    contentState[i + 1]++;
+                }
+
+                drawGround(i, tWidth, letterWidth);
+                drawSkeleton(i, tWidth, letterWidth, textBox);
+
+                drawCrain(i, tWidth, letterWidth);
+            } else if (contentState[i] < 180) {
+                drawGround(i, tWidth, letterWidth);
+                drawSkeleton(i, tWidth, letterWidth, textBox);
+                drawLetterSkeleton(i, tWidth, letterWidth);
+
+                drawCrain(i, tWidth, letterWidth);
+            } else if (contentState[i] < 240) {
+                drawGround(i, tWidth, letterWidth);
+                drawSkeleton(i, tWidth, letterWidth, textBox);
+                drawLetterSkeleton(i, tWidth, letterWidth);
+
+                drawCrain(i, tWidth, letterWidth);
+            }
+        }
+
+        // if (contentState[i] >= 0) { // 땅 고르기
+
+    }
+
+    // for (let i = 0; i < 100; i++) {
+    //     fill(i + 50);
+    //     text("ABCDEFG", width / 2, height / 2 - i / 2);
     // }
 
-    for (let i = 0; i < points.length - oldPoints.length; i++) {
-        oldPoints[oldPoints.length + i]({ x : width, y : height })
-    }
 
-    for (let i = 0; i < oldPoints.length - points.length; i++) {
-        points[points.length + i]({ x : 0, y : height })
+
+}
+
+function drawLevelGroundAndCrain(i, tWidth, letterWidth) {
+    fill('#5d4037');
+    text(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2);
+
+    if (contentState[i] >= 30 && contentState[i] < 40) {
+        noFill();
+        strokeWeight(3);
+        stroke('#fff176');
+        for (let j = 0; j < contentState[i] - 30; j++) {
+            text(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2 - j);
+        }
+    } else if (contentState[i] >= 40) { // 40 ~ 60
+        noFill();
+        stroke('#fff176');
+        strokeWeight(3);
+        for (let j = 0; j < 10; j++) {
+            text(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2 - j);
+        }
+
+        stroke('#ffa000');
+
+        for (let j = 0; j <= contentState[i] - 40; j++) {
+            rect(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10, height / 2, 20, -j * 200 / 20);
+        }
+
+        beginShape();
+        vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) + size / 10 * 2, height / 2 - (contentState[i] - 40) * 200 / 20);
+        vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 6, height / 2 - (contentState[i] - 40) * 200 / 20);
+        vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10, height / 2 - (contentState[i] - 40 + 2) * 200 / 20);
+        vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) + size / 10 * 2, height / 2 - (contentState[i] - 40) * 200 / 20);
+        endShape();
+
+        if (contentState[i] >= 48) {
+            line(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 4, height / 2 - (contentState[i] - 40 - 8) * 200 / 20
+                ,width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 4, height / 2 - (contentState[i] - 40) * 200 / 20)
+        } else {
+            line(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 4, height / 2
+                ,width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 4, height / 2 - (contentState[i] - 40) * 200 / 20)
+        }
     }
 }
+
+function drawGround(i, tWidth, letterWidth) {
+    fill('#5d4037');
+    text(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2);
+
+    noFill();
+    stroke('#fff176');
+    strokeWeight(3);
+    for (let j = 0; j < 10; j++) {
+        text(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2 - j);
+    }
+}
+
+function drawCrain(i, tWidth, letterWidth) {
+    stroke('#ffa000');
+    strokeWeight(3);
+
+    for (let j = 0; j <= 20; j++) {
+        rect(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10, height / 2, 20, -j * 200 / 20);
+    }
+
+    beginShape();
+    vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) + size / 10 * 2, height / 2 - 20 * 200 / 20);
+    vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 6, height / 2 - 20 * 200 / 20);
+    vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10, height / 2 - (20 + 2) * 200 / 20);
+    vertex(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) + size / 10 * 2, height / 2 - 20 * 200 / 20);
+    endShape();
+
+    line(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 4, height / 2 - (60 - 40 - 8) * 200 / 20
+        ,width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) - size / 10 * 4, height / 2 - (60 - 40) * 200 / 20)
+}
+
+function drawSkeleton(i, tWidth, letterWidth, textBox) {
+    let state = contentState[i];
+    if (state >= 120) {
+        state = 120;
+    }
+
+    strokeWeight(5);
+    stroke('#134b8b');
+    line(textBox.x, height / 2 - textBox.h, textBox.x, height / 2 - (state - 60) * 200 / 60 - textBox.h);
+    line(textBox.x + textBox.w, height / 2 - textBox.h, textBox.x + textBox.w, height / 2 - (state - 60) * 200 / 60 - textBox.h);
+    stroke('#1565c0');
+    line(textBox.x, height / 2, textBox.x, height / 2 - (state - 60) * 200 / 60);
+    line(textBox.x + textBox.w, height / 2, textBox.x + textBox.w, height / 2 - (state - 60) * 200 / 60);
+}
+
+function drawLetterSkeleton(i, tWidth, letterWidth) {
+    let state = contentState[i];
+    if (state >= 180) {
+        state = 180;
+    }
+    stroke('#1565c0');
+    for (let j = 0; j <= state - 120 ; j += 3) {
+        text(content[i], width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2, height / 2 - j * 200 / 60);
+    }
+}
+
+function textButtonOnClickListener() {
+    oldContent = content;
+    content = inputBox.value();
+
+    contentState = [0];
+    for (let i = 1; i < content.length; i++) {
+        contentState.push(-1);
+    }
+}
+
 
 function getInverseColor(colorString) {
     let c = color(colorString);
