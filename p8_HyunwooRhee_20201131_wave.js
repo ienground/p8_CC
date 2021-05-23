@@ -4,177 +4,89 @@
  * Ericano Rhee on github.com/ienground
  */
 
-class Cannon {
-    constructor(x, y, size, angle) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.angle = angle;
-    }
+let letterInfo;
 
-    draw() {
-        stroke(0);
-        strokeWeight(0.05 * this.size);
-        fill('#93570f');
-        beginShape();
-        vertex(this.x - this.size / 2, this.y);
-        vertex(this.x - this.size / 2, this.y + this.size / 4);
-        vertex(this.x + this.size / 2, this.y + this.size / 8);
-        vertex(this.x + this.size / 2, this.y - this.size * 3 / 8);
-        vertex(this.x + this.size / 4, this.y - this.size * 3 / 8);
-        vertex(this.x, this.y - this.size / 8);
-        vertex(this.x - this.size / 2, this.y);
-        endShape();
-
-        fill('#444649')
-        circle(this.x + this.size / 2, this.y + this.size / 8, this.size / 2);
-
-        fill('#676a6d')
-        push();
-        translate(this.x + this.size / 4, this.y - this.size * 3 / 8);
-        rotate(this.angle);
-        circle(-this.size / 4, 0, this.size / 8);
-        arc(0, 0, this.size / 2, this.size / 2, 90, 270, PIE);
-        rect(0, -this.size / 4, this.size, this.size / 2);
-        rect(-this.size / 10, -this.size / 3.5, this.size / 5, this.size / 1.75);
-        rect(this.size - this.size / 10, -this.size / 3.5, this.size / 5, this.size / 1.75);
-        pop();
-    }
-
-    setAngle(angle) {
-        this.angle = angle;
-    }
-
-    getEndX() {
-        return this.x + this.size / 4 + this.size * cos(this.angle);
-    }
-
-    getEndY() {
-        return this.y - this.size * 3 / 8 + this.size * sin(this.angle);
-    }
-}
-
-let font;
-let inputBox, inputButton;
-
-let content = "android";
-let oldContent = "android";
-
-let contentX, contentY, oldContentX, oldContentY;
-let size = 200;
-
-let navy, orange, blue, sky;
-
-function preload() {
-    font = loadFont("assets/PeaceSans.otf");
-}
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES);
 
-    inputBox = createInput("android");
-    inputBox.position(10, 10);
-    inputButton = createButton("Make");
-    inputButton.position(inputBox.x + inputBox.width, inputBox.y);
-    inputButton.mousePressed(textButtonOnClickListener)
+    letterInfo = new Map();
+    letterInfo.set('A', [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('B', [[1, 1, 1, 0], [1, 0, 1, 0], [1, 1, 1, 1], [1, 0, 0, 1], [1, 1, 1, 1]]);
+    letterInfo.set('C', [[1, 1, 1], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('D', [[1, 1, 0], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 0]]);
+    letterInfo.set('E', [[1, 1, 1], [1, 0, 0], [1, 1, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('F', [[1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 0, 0], [1, 0, 0]]);
+    letterInfo.set('G', [[1, 1, 1, 1], [1, 0, 0, 0], [1, 0, 1, 1], [1, 0, 0, 1], [1, 1, 1, 1]]);
+    letterInfo.set('H', [[1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('I', [[1], [1], [1], [1], [1]]);
+    letterInfo.set('J', [[1, 1, 1], [0, 0, 1], [0, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('K', [[1, 0, 1], [1, 0, 1], [1, 1, 0], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('L', [[1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('M', [[1, 0, 0, 0, 1], [1, 1, 0, 1, 1], [1, 0, 1, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1]]);
+    letterInfo.set('N', [[1, 0, 0, 1], [1, 1, 0, 1], [1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 0, 1]]);
+    letterInfo.set('O', [[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('P', [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0], [1, 0, 0]]);
+    letterInfo.set('Q', [[1, 1, 1, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 1, 1, 1]]);
+    letterInfo.set('R', [[1, 1, 1], [1, 0, 1], [1, 1, 0], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('S', [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]]);
+    letterInfo.set('T', [[1, 1, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0]]);
+    letterInfo.set('U', [[1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('V', [[1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 0]]);
+    letterInfo.set('W', [[1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 1, 0, 1], [1, 1, 0, 1, 1], [1, 0, 0, 0, 1]]);
+    letterInfo.set('X', [[1, 0, 1], [1, 0, 1], [0, 1, 0], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('Y', [[1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 0], [0, 1, 0]]);
+    letterInfo.set('Z', [[1, 1, 1], [0, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 1]]);
 
-    navy = color('#070728');
-    orange = color('#EA8B16')
-    blue = color('#1E78F0')
-    sky = color('#7DCDf5')
+    letterInfo.set('a', [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('b', [[1, 1, 1, 0], [1, 0, 1, 0], [1, 1, 1, 1], [1, 0, 0, 1], [1, 1, 1, 1]]);
+    letterInfo.set('c', [[1, 1, 1], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('d', [[1, 1, 0], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 0]]);
+    letterInfo.set('e', [[1, 1, 1], [1, 0, 0], [1, 1, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('f', [[1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 0, 0], [1, 0, 0]]);
+    letterInfo.set('g', [[1, 1, 1], [1, 0, 0], [1, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('h', [[1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('i', [[1], [0], [1], [1], [1]]);
+    letterInfo.set('j', [[0, 0, 1], [0, 0, 1], [0, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('k', [[1, 0, 1], [1, 0, 1], [1, 1, 0], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('l', [[1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('m', [[1, 1, 1, 1, 1], [1, 0, 1, 0, 1], [1, 0, 1, 0, 1], [1, 0, 1, 0, 1], [1, 0, 1, 0, 1]]);
+    letterInfo.set('n', [[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('o', [[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('p', [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0], [1, 0, 0]]);
+    letterInfo.set('q', [[0, 1, 0], [1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]]);
+    letterInfo.set('r', [[1, 1, 1], [1, 0, 1], [1, 1, 0], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('s', [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]]);
+    letterInfo.set('T', [[1, 1, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0]]);
+    letterInfo.set('u', [[1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('v', [[1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 0]]);
+    letterInfo.set('w', [[1, 0, 1, 0, 1], [1, 0, 1, 0, 1], [1, 0, 1, 0, 1], [1, 0, 1, 0, 1], [1, 1, 1, 1, 1]]);
+    letterInfo.set('x', [[1, 0, 1], [1, 0, 1], [0, 1, 0], [1, 0, 1], [1, 0, 1]]);
+    letterInfo.set('y', [[1, 0, 1], [1, 1, 1], [0, 1, 0], [0, 1, 0], [0, 1, 0]]);
+    letterInfo.set('z', [[1, 1, 1], [0, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('0', [[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('1', [[1, 1], [0, 1], [0, 1], [0, 1], [0, 1]]);
+    letterInfo.set('2', [[1, 1, 1], [0, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1]]);
+    letterInfo.set('3', [[1, 1, 1], [0, 0, 1], [0, 1, 1], [0, 1, 1], [1, 1, 1]]);
+    letterInfo.set('4', [[1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [0, 0, 1]]);
+    letterInfo.set('5', [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]]);
+    letterInfo.set('6', [[1, 0, 0], [1, 0, 0], [1, 1, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('7', [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]]);
+    letterInfo.set('8', [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]]);
+    letterInfo.set('9', [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [0, 0, 1]]);
 
-    // let tWidth = textWidth(content);
-    // contentX = [];
-    //
-    // for (let i = 0; i < content.length; i++) {
-    //     let letterWidth = 0;
-    //     for (let j = 0; j < i; j++) {
-    //         letterWidth += textWidth(content[j]);
-    //     }
-    //     contentX.push(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2);
-    // }
-    fill(0);
-    textFont(font);
-    textSize(size);
-    textAlign(CENTER);
-
-    textButtonOnClickListener();
 
 }
 
 function draw() {
     background(255);
-    // setBackground(frameCount / 10);
 
-    let waveAmp = 20;
-    let waveLength = 2;
-
-    makeWaveform(100, height / 2 - 25, 45, 2, '#28A9E0');
-    makeWaveform(0, height / 2, waveAmp, waveLength, '#008FD3');
-
-    // text
-
-
-    // text(content, width / 2, height / 2 + size * 0.6);
-    fill(255);
-
-
-
-    for (let i = 0; i < content.length; i++) {
-        if (i % 3 !== 0) {
-            text(content[i], contentX[i], height / 2 + size * 0.6 + waveAmp * sin((frameCount + contentX[i]) / waveLength));
-        }
-    }
-
-    makeWaveform(0, height / 2 + 100, waveAmp, waveLength, '#252F6D');
-
-    fill(255);
-
-    for (let i = 0; i < content.length; i++) {
-        if (i % 3 === 0) {
-            text(content[i], contentX[i], height / 2 + size * 0.85 + waveAmp * sin((frameCount + contentX[i]) / waveLength));
-        }
-    }
-
-    makeWaveform(0, height / 2 + 150, waveAmp, waveLength,'#0C1848');
 
 
 }
 
-function makeWaveform(waveXOffset, waveHeight, waveAmp, waveLength, waveColor) {
-    noStroke();
-    fill(waveColor);
 
-    beginShape();
-
-    vertex(width / 2 - waveXOffset, waveHeight + waveAmp * sin((frameCount + width / 2) / waveLength), 20);
-
-    for (let i = 0; i <= width + waveXOffset; i++) {
-        vertex(i - waveXOffset, waveHeight + waveAmp * sin((frameCount + i) / waveLength));
-    }
-    vertex(width , height);
-    vertex(-waveXOffset, height);
-    vertex(-waveXOffset, waveHeight + waveAmp * sin(frameCount / waveLength));
-    endShape();
-}
-
-function textButtonOnClickListener() {
-    oldContent = content;
-    content = inputBox.value();
-
-    let tWidth = textWidth(content);
-    contentX = [];
-
-    for (let i = 0; i < content.length; i++) {
-        let letterWidth = 0;
-        for (let j = 0; j < i; j++) {
-            letterWidth += textWidth(content[j]);
-        }
-        contentX.push(width / 2 - tWidth / 2 + letterWidth + textWidth(content[i]) / 2);
-    }
-
-}
 
 function setBackground(timer) {
     colorMode(RGB, 255);
